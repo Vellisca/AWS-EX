@@ -3,6 +3,7 @@
 // Create a DocumentClient that represents the query to add an item
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
+const sc = require("prompt-sync")({ sigint: true });
 const client = new DynamoDBClient({});
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
@@ -23,12 +24,23 @@ export const putItemHandler = async (event) => {
     const body = JSON.parse(event.body);
     const id = body.id;
     const name = body.name;
+    let materiales = ['Madera','Madera','Fuego','Fuego','Tierra','Tierra','Metal','Metal','Agua','Agua'];
+    let animales = ['Rata','buey','tigre','conejo','dragón','serpiente','caballo','oveja','mono','gallo','perro','cerdo'];
+    const año= body.año;
+    
+    let restaño= Math.abs(Number(año)-1984);
+    let remainmat= restaño%materiales.length;
+    let remainanimales= restaño%animales.length;
+
+    let material=materiales[remainmat];
+    let animal=animales[remainanimales];
+    console.log(animal + " animal chino con elemento: "+ material);
 
     // Creates a new item, or replaces an old item with a new item
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
     var params = {
         TableName : tableName,
-        Item: { id : id, name: name }
+        Item: { id : id, name: name, año: Number(año), AnimalChino: animal, ElementoChino: material}
     };
 
     try {
